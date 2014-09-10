@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Ant build file for jresurf
+-->
+
+<project basedir="." default="build" name="spiderpig" 
+	xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <property file="build.properties" />
+    
+    <!-- CLEAN -->
+    <target name="clean">
+        <delete dir="${classes.dir}" />
+        <delete dir="${src.gen.dir}" />
+        <delete file="${dist.jar}" />
+    </target>
+    <!-- END CLEAN -->
+    
+    <!-- BUILD -->
+    <target name="build">
+        <mkdir dir="${classes.dir}" />
+
+        <javac srcdir="${src.dir}"
+            destdir="${classes.dir}" target="${build.target}" optimize="on" 
+            debug="on" debuglevel="lines,vars,source" 
+            includeantruntime="false">
+            <include name="**" />
+        </javac>
+
+        <jar destfile="${dist.jar}">
+            <fileset dir="${classes.dir}">
+                <include name="**/*.class" />
+            </fileset>
+
+            <manifest>
+                <attribute name="Main-Class"
+                    value="jresurf.ui.Main"/>
+                <attribute name="Class-Path" value="${manifest.classpath}" />
+            </manifest>
+        </jar>
+    </target>
+    <!-- END BUILD -->
+
+    <!-- UNIT TESTS -->
+    <target name="tests" depends="build">
+        <junit fork="true">
+            <classpath>
+                <pathelement location="${classes.dir}"/>
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+    
+            <batchtest fork="yes">
+                <fileset dir="${test.dir}">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+    <!-- END UNIT TESTS -->
+    
+    <!-- HELP -->
+    <target name="help" description="prints target descriptions">
+        <echo message="Tasks:" />
+        <echo message="" />
+        <echo message="ant build (default) : complete system build." />
+        <echo message="ant clean : clean up a previous build." />
+        <echo message="ant help : prints this help." />
+        <echo message="ant tests : runs unit tests." />
+    </target>
+    <!-- END_HELP -->
+
+</project>
